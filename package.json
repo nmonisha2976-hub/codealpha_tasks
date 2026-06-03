@@ -10,14 +10,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcryptjs": "^latest",
-    "cors": "^latest",
-    "dotenv": "^latest",
-    "express": "^latest",
-    "jsonwebtoken": "^latest",
-    "mongoose": "^latest"
+    "bcryptjs": "*",
+    "cors": "*",
+    "dotenv": "*",
+    "express": "*",
+    "jsonwebtoken": "*",
+    "mongoose": "*"
   },
   "devDependencies": {
-    "nodemon": "^latest"
+    "nodemon": "*"
   }
 }
