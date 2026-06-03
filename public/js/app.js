@@ -11,64 +11,63 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* ================= PRODUCTS ================= */
 
-function loadProducts() {
+async function loadProducts() {
   const container = document.getElementById("products");
   if (!container) return;
 
-  fetch(`${API}/products`)
-    .then(res => res.json())
-    .then(products => {
-      container.innerHTML = "";
+  try {
+    const res = await fetch(`${API}/products`);
+    const products = await res.json();
 
-      if (!Array.isArray(products)) {
-        container.innerHTML = "<h2>No products found</h2>";
-        return;
+    container.innerHTML = "";
+
+    if (!Array.isArray(products)) {
+      container.innerHTML = "<h2>No products found</h2>";
+      return;
+    }
+
+    const uniqueProducts = [
+      ...new Map(products.map(p => [p._id, p])).values()
+    ];
+
+    uniqueProducts.forEach(product => {
+      try {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const image =
+          product.image && typeof product.image === "string" && product.image.trim()
+            ? product.image
+            : "https://via.placeholder.com/250x180";
+
+        card.innerHTML = `
+          <img 
+            src="${image}"
+            class="product-img"
+            loading="lazy"
+            onerror="this.src='https://via.placeholder.com/250x180'"
+          >
+
+          <h3>${product.name ?? "No Name"}</h3>
+          <p>${product.description ?? ""}</p>
+
+          <p class="price">₹${product.price ?? 0}</p>
+
+          <button onclick="addToCart('${product._id}')">
+            Add To Cart
+          </button>
+        `;
+
+        container.appendChild(card);
+      } catch (err) {
+        console.log("Product render error:", product, err);
       }
-
-      const uniqueProducts = [...new Map(products.map(p => [p._id, p])).values()];
-
-      uniqueProducts.forEach(product => {
-        try {
-          const card = document.createElement("div");
-          card.className = "card";
-
-          const image =
-            typeof product.image === "string" && product.image.trim() !== ""
-              ? product.image
-              : "https://via.placeholder.com/250x180";
-
-          const name = product.name || "No Name";
-          const desc = product.description || "";
-          const price = product.price ?? 0;
-          const id = product._id;
-
-          card.innerHTML = `
-            <img 
-              src="${image}"
-              class="product-img"
-              onerror="this.src='https://via.placeholder.com/250x180'"
-            >
-
-            <h3>${name}</h3>
-            <p>${desc}</p>
-
-            <p class="price">₹${price}</p>
-
-            <button onclick="addToCart('${id}')">
-              Add To Cart
-            </button>
-          `;
-
-          container.appendChild(card);
-        } catch (err) {
-          console.log("Skipping product due to error:", product, err);
-        }
-      });
-    })
-    .catch(err => {
-      console.log("Products load error:", err);
-      container.innerHTML = "<h2>Failed to load products</h2>";
     });
+
+  } catch (err) {
+    console.log("Products load error:", err);
+    container.innerHTML = "<h2>Failed to load products</h2>";
+  }
 }
 
 /* ================= REGISTER ================= */
@@ -150,6 +149,8 @@ function addToCart(id) {
 
 async function loadCart() {
   const cartItemsDiv = document.getElementById("cartItems");
+  if (!cartItemsDiv) return;
+
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
   cartItemsDiv.innerHTML = "";
@@ -168,7 +169,7 @@ async function loadCart() {
       card.className = "card";
 
       const image =
-        typeof product.image === "string" && product.image.trim() !== ""
+        product.image && typeof product.image === "string" && product.image.trim()
           ? product.image
           : "https://via.placeholder.com/250x180";
 
@@ -176,11 +177,12 @@ async function loadCart() {
         <img 
           src="${image}"
           class="product-img"
+          loading="lazy"
           onerror="this.src='https://via.placeholder.com/250x180'"
         >
 
-        <h3>${product.name || "No Name"}</h3>
-        <p>${product.description || ""}</p>
+        <h3>${product.name ?? "No Name"}</h3>
+        <p>${product.description ?? ""}</p>
 
         <p class="price">₹${product.price ?? 0}</p>
 
@@ -190,6 +192,7 @@ async function loadCart() {
       `;
 
       cartItemsDiv.appendChild(card);
+
     } catch (err) {
       console.log("Cart load error:", err);
     }
