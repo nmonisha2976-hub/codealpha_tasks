@@ -1,4 +1,4 @@
-const API = "http://localhost:5000/api";
+const API = "https://codealpha-tasks-mq2i.onrender.com/api";
 
 // PRODUCTS
 
