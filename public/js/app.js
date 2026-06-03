@@ -1,42 +1,51 @@
 const API = "https://codealpha-tasks-mq2i.onrender.com/api";
 
-// PRODUCTS
+/* ================= PRODUCTS ================= */
 
-if (document.getElementById("products")) {
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.getElementById("products");
+
+  if (!container) return;
+
   fetch(`${API}/products`)
-    .then((res) => res.json())
-    .then((products) => {
-      const container = document.getElementById("products");
+    .then(res => res.json())
+    .then(products => {
+      container.innerHTML = "";
 
-      products.forEach((product) => {
-        container.innerHTML += `
-          <div class="card">
+      // REMOVE DUPLICATES BASED ON _id
+      const uniqueProducts = [...new Map(products.map(p => [p._id, p])).values()];
 
-            <img
-              src="https://via.placeholder.com/250x180"
-              alt="${product.name}"
-              class="product-img"
-            >
+      uniqueProducts.forEach(product => {
+        const card = document.createElement("div");
+        card.className = "card";
 
-            <h3>${product.name}</h3>
+        card.innerHTML = `
+          <img 
+            src="${product.image || 'https://via.placeholder.com/250x180'}"
+            class="product-img"
+          >
 
-            <p>${product.description}</p>
+          <h3>${product.name}</h3>
+          <p>${product.description}</p>
 
-            <p class="price">
-              ₹${product.price}
-            </p>
+          <p class="price">₹${product.price}</p>
 
-            <button onclick="addToCart('${product._id}')">
-              Add To Cart
-            </button>
-
-          </div>
+          <button onclick="addToCart('${product._id}')">
+            Add To Cart
+          </button>
         `;
+
+        container.appendChild(card);
       });
     });
-}
+});
+  /* ================= CART AUTO LOAD ================= */
 
-// REGISTER
+  const cartDiv = document.getElementById("cartItems");
+  if (cartDiv) loadCart();
+});
+
+/* ================= REGISTER ================= */
 
 const registerForm = document.getElementById("registerForm");
 
@@ -50,23 +59,25 @@ if (registerForm) {
       password: document.getElementById("password").value,
     };
 
-    const res = await fetch(`${API}/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch(`${API}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-    await res.json();
+      await res.json();
 
-    alert("Registration Successful");
-
-    window.location.href = "login.html";
+      alert("Registration Successful");
+      window.location.href = "login.html";
+    } catch (err) {
+      console.log(err);
+      alert("Registration Failed");
+    }
   });
 }
 
-// LOGIN
+/* ================= LOGIN ================= */
 
 const loginForm = document.getElementById("loginForm");
 
@@ -79,25 +90,30 @@ if (loginForm) {
       password: document.getElementById("password").value,
     };
 
-    const res = await fetch(`${API}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch(`${API}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-    const result = await res.json();
+      const result = await res.json();
 
-    localStorage.setItem("token", result.token);
-
-    alert("Login Successful");
-
-    window.location.href = "index.html";
+      if (result.token) {
+        localStorage.setItem("token", result.token);
+        alert("Login Successful");
+        window.location.href = "index.html";
+      } else {
+        alert("Invalid Credentials");
+      }
+    } catch (err) {
+      console.log(err);
+      alert("Login Failed");
+    }
   });
 }
 
-// CART
+/* ================= CART ================= */
 
 function addToCart(id) {
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -109,48 +125,54 @@ function addToCart(id) {
   alert("Product Added To Cart");
 }
 
-// SHOW CART
-
-if (document.getElementById("cartItems")) {
-  loadCart();
-}
+/* ================= LOAD CART ================= */
 
 async function loadCart() {
   const cartItemsDiv = document.getElementById("cartItems");
 
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
+  cartItemsDiv.innerHTML = "";
+
   if (cart.length === 0) {
-    cartItemsDiv.innerHTML = `
-      <h2>Your Cart Is Empty</h2>
-    `;
+    cartItemsDiv.innerHTML = "<h2>Your Cart Is Empty</h2>";
     return;
   }
 
   for (let productId of cart) {
-    const res = await fetch(`${API}/products/${productId}`);
-    const product = await res.json();
+    try {
+      const res = await fetch(`${API}/products/${productId}`);
+      const product = await res.json();
 
-    cartItemsDiv.innerHTML += `
-      <div class="card">
+      const card = document.createElement("div");
+      card.className = "card";
 
-        
+      card.innerHTML = `
+        <img 
+          src="${product.image || 'https://via.placeholder.com/250x180'}"
+          class="product-img"
+          onerror="this.src='https://via.placeholder.com/250x180'"
+        >
+
         <h3>${product.name}</h3>
 
         <p>${product.description}</p>
 
-        <p class="price">
-          ₹${product.price}
-        </p>
+        <p class="price">₹${product.price}</p>
 
         <button onclick="removeFromCart('${product._id}')">
           Remove
         </button>
+      `;
 
-      </div>
-    `;
+      cartItemsDiv.appendChild(card);
+    } catch (err) {
+      console.log("Cart load error:", err);
+    }
   }
 }
+
+/* ================= REMOVE CART ================= */
 
 function removeFromCart(id) {
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -161,6 +183,8 @@ function removeFromCart(id) {
 
   location.reload();
 }
+
+/* ================= CHECKOUT ================= */
 
 function checkout() {
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
