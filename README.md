@@ -1,15 +1,18 @@
 🛒 CodeAlpha E-Commerce Store
 
-A full-stack e-commerce web application built using Node.js, Express, and MongoDB with a simple frontend for browsing products, cart management, and authentication.
+A full-stack e-commerce web application built using Node.js, Express, and MongoDB Atlas, featuring authentication, product listing, and cart management.
 
-🚀 Features
+🚀 Live Demo
+🌐 Frontend: https://codealpha-tasks-mq2i.onrender.com
+🔗 Backend API: https://codealpha-tasks-mq2i.onrender.com/api
+✨ Features
 User Registration & Login (JWT Authentication)
 Product listing from backend API
 Add to Cart & Remove from Cart (LocalStorage)
-Checkout flow (basic)
-REST API backend with Express
-MongoDB database integration
-Simple responsive frontend UI
+Basic Checkout functionality
+RESTful API using Express
+MongoDB Atlas database integration
+Responsive frontend UI
 🧰 Tech Stack
 
 Frontend:
@@ -25,11 +28,11 @@ Express.js
 
 Database:
 
-MongoDB (Mongoose)
+MongoDB Atlas (Mongoose)
 
 Other Tools:
 
-JWT (Authentication)
+JWT Authentication
 dotenv
 CORS
 📁 Project Structure
@@ -39,25 +42,30 @@ CodeAlpha_EcommerceStore/
 ├── middleware/
 ├── models/
 ├── routes/
-├── public/        # Frontend files
+├── public/
+│   ├── index.html
+│   ├── app.js
+│   └── styles.css
+│
 ├── server.js
 ├── package.json
 ├── .gitignore
 ⚙️ Installation & Setup
-1. Clone the repository
+Clone the repository
 git clone https://github.com/nmonisha2976-hub/codealpha_tasks.git
-2. Move into project folder
-cd codealpha_tasks
-3. Install dependencies
+Install dependencies
 npm install
-4. Create .env file
+Environment Variables
+
+Create a .env file:
+
 PORT=5000
-MONGO_URI=mongodb://127.0.0.1:27017/codealpha_store
-JWT_SECRET=mysecretkey123
-5. Run the server
+MONGO_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_secret_key
+Run the server
 node server.js
 
-Server will start at:
+Server runs at:
 
 http://localhost:5000
 📡 API Endpoints
@@ -73,7 +81,7 @@ POST /api/orders
 User registers / logs in
 Products are fetched from backend API
 User adds products to cart
-Cart stored in browser (LocalStorage)
+Cart stored in LocalStorage
 Checkout clears cart
 📌 Future Improvements
 Payment gateway integration
@@ -82,7 +90,9 @@ Product image upload
 Order history page
 Improved UI/UX
 👩‍💻 Author
-GitHub: nmonisha2976-hub
+
+GitHub: https://github.com/nmonisha2976-hub
+
 📄 License
 
 This project is for educational/internship purposes.
