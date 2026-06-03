@@ -45,15 +45,15 @@ CodeAlpha_EcommerceStore/
 ├── .gitignore
 ⚙️ Installation & Setup
 1. Clone the repository
-git clone https://github.com/your-username/codealpha_tasks.git
+git clone https://github.com/nmonisha2976-hub/codealpha_tasks.git
 2. Move into project folder
 cd codealpha_tasks
 3. Install dependencies
 npm install
 4. Create .env file
 PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
+MONGO_URI=mongodb://127.0.0.1:27017/codealpha_store
+JWT_SECRET=mysecretkey123
 5. Run the server
 node server.js
 
