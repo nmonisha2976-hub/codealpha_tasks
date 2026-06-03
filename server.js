@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 const connectDB = require("./config/db");
 
@@ -16,14 +17,17 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// Serve Frontend Files
+app.use(express.static(path.join(__dirname, "public")));
+
+// API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 
 // Home Route
 app.get("/", (req, res) => {
-  res.send("CodeAlpha Ecommerce API Running");
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 const PORT = process.env.PORT || 5000;
