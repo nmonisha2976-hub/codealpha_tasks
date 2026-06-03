@@ -28,32 +28,41 @@ function loadProducts() {
       const uniqueProducts = [...new Map(products.map(p => [p._id, p])).values()];
 
       uniqueProducts.forEach(product => {
-        const card = document.createElement("div");
-        card.className = "card";
+        try {
+          const card = document.createElement("div");
+          card.className = "card";
 
-        const image =
-          product.image && product.image.trim() !== ""
-            ? product.image
-            : "https://via.placeholder.com/250x180";
+          const image =
+            typeof product.image === "string" && product.image.trim() !== ""
+              ? product.image
+              : "https://via.placeholder.com/250x180";
 
-        card.innerHTML = `
-          <img 
-            src="${image}"
-            class="product-img"
-            onerror="this.src='https://via.placeholder.com/250x180'"
-          >
+          const name = product.name || "No Name";
+          const desc = product.description || "";
+          const price = product.price ?? 0;
+          const id = product._id;
 
-          <h3>${product.name || "No Name"}</h3>
-          <p>${product.description || ""}</p>
+          card.innerHTML = `
+            <img 
+              src="${image}"
+              class="product-img"
+              onerror="this.src='https://via.placeholder.com/250x180'"
+            >
 
-          <p class="price">₹${product.price || 0}</p>
+            <h3>${name}</h3>
+            <p>${desc}</p>
 
-          <button onclick="addToCart('${product._id}')">
-            Add To Cart
-          </button>
-        `;
+            <p class="price">₹${price}</p>
 
-        container.appendChild(card);
+            <button onclick="addToCart('${id}')">
+              Add To Cart
+            </button>
+          `;
+
+          container.appendChild(card);
+        } catch (err) {
+          console.log("Skipping product due to error:", product, err);
+        }
       });
     })
     .catch(err => {
@@ -159,7 +168,7 @@ async function loadCart() {
       card.className = "card";
 
       const image =
-        product.image && product.image.trim() !== ""
+        typeof product.image === "string" && product.image.trim() !== ""
           ? product.image
           : "https://via.placeholder.com/250x180";
 
@@ -170,10 +179,10 @@ async function loadCart() {
           onerror="this.src='https://via.placeholder.com/250x180'"
         >
 
-        <h3>${product.name}</h3>
-        <p>${product.description}</p>
+        <h3>${product.name || "No Name"}</h3>
+        <p>${product.description || ""}</p>
 
-        <p class="price">₹${product.price}</p>
+        <p class="price">₹${product.price ?? 0}</p>
 
         <button onclick="removeFromCart('${product._id}')">
           Remove
